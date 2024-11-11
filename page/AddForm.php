@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,27 +16,27 @@
         }
 
         .form-container {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 30px;
+            max-width: 400px; /* Reduced width */
+            margin: 30px auto; /* Reduced margin */
+            padding: 20px; /* Reduced padding */
             background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 10px;
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+            border-radius: 8px; /* Reduced border radius */
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
             text-align: center;
         }
 
         .form-container h2 {
-            margin-bottom: 20px;
-            font-size: 24px;
+            margin-bottom: 15px; /* Reduced margin */
+            font-size: 20px; /* Reduced font size */
             color: #ff007f;
             border-bottom: 2px solid #ff007f;
-            padding-bottom: 10px;
+            padding-bottom: 8px; /* Reduced padding */
         }
 
         .form-container label {
             display: block;
-            font-size: 18px;
-            margin-top: 15px;
+            font-size: 14px; /* Reduced font size */
+            margin-top: 10px; /* Reduced margin */
             color: #ff80b3;
         }
 
@@ -45,11 +44,11 @@
         .form-container input[type="number"],
         .form-container select {
             width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            font-size: 16px;
+            padding: 8px; /* Reduced padding */
+            margin-top: 4px; /* Reduced margin */
+            font-size: 14px; /* Reduced font size */
             border: none;
-            border-radius: 5px;
+            border-radius: 4px; /* Reduced border radius */
             background-color: #ffb3d9;
             color: #333;
         }
@@ -57,11 +56,11 @@
         .form-container button[type="submit"],
         .form-container button[type="reset"] {
             width: 48%;
-            padding: 10px;
-            margin-top: 20px;
-            font-size: 16px;
+            padding: 8px; /* Reduced padding */
+            margin-top: 15px; /* Reduced margin */
+            font-size: 14px; /* Reduced font size */
             border: none;
-            border-radius: 5px;
+            border-radius: 4px; /* Reduced border radius */
             cursor: pointer;
             color: white;
             transition: background-color 0.3s;

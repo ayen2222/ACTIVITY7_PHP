@@ -2,13 +2,15 @@
 session_start();
 
 // Check if email and password are set in the session
-if(!isset($_SESSION['email']) || !isset($_SESSION['password'])){
+if (!isset($_SESSION['email']) || !isset($_SESSION['password'])) {
     header('location:../login.php');
     exit();
 }
 
-// Initialize variables
-$name = $age = $gender = $course = $campus = $section = $college = "---";
+// Initialize session variable to store entries if it doesn't exist
+if (!isset($_SESSION['entries'])) {
+    $_SESSION['entries'] = [];
+}
 
 // Check if the form has been submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
@@ -18,11 +20,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     $gender = htmlspecialchars($_POST['gender']);
     $course = htmlspecialchars($_POST['course']);
     $campus = htmlspecialchars($_POST['campus']);
-    $section = htmlspecialchars($_POST['section']);
     $college = htmlspecialchars($_POST['college']);
+    
+    // Store the new entry in the session
+    $_SESSION['entries'][] = [
+        'name' => $name,
+        'age' => $age,
+        'gender' => $gender,
+        'course' => $course,
+        'campus' => $campus,
+        'college' => $college
+    ];
+}
+
+// Check if a delete request has been made
+if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
+    $deleteIndex = (int)$_GET['delete'];
+    if (isset($_SESSION['entries'][$deleteIndex])) {
+        unset($_SESSION['entries'][$deleteIndex]);
+        // Re-index array after deletion
+        $_SESSION['entries'] = array_values($_SESSION['entries']);
+    }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,36 +51,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>Details Page</title>
     <?php include('../layout/style.php'); ?>
+    <!-- Include DataTable CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <style>
         body {
-            background: linear-gradient(135deg, #000000, #ff007f);
-            color: #ffffff;
+            background-color: #ffffff;
+            color: #333333;
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
         }
 
-        .details-container {
-            max-width: 600px;
+        .table-container {
+            max-width: 800px;
             margin: 50px auto;
             padding: 30px;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: #ffffff;
             border-radius: 10px;
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
-            text-align: center;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .details-container h2 {
+        .table-container h2 {
             margin-bottom: 20px;
             font-size: 24px;
-            color: #ff007f;
-            border-bottom: 2px solid #ff007f;
+            color: #333333;
+            border-bottom: 2px solid #333333;
             padding-bottom: 10px;
         }
 
-        .details-container p {
-            font-size: 18px;
-            color: #ff80b3;
+        /* Style for delete button */
+        .delete-button {
+            color: #ffffff;
+            background-color: #ff4d4d;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -71,22 +97,60 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
         <?php include('../layout/navigation.php'); ?>
         <div id="layoutSidenav_content">
             <main>
-                <div class="container-fluid px-4">
-                    <div class="details-container">
-                        <h2>Submitted Details</h2>
-                        <p><strong>Name:</strong> <?php echo $name; ?></p>
-                        <p><strong>Age:</strong> <?php echo $age; ?></p>
-                        <p><strong>Gender:</strong> <?php echo $gender; ?></p>
-                        <p><strong>Course:</strong> <?php echo $course; ?></p>
-                        <p><strong>Campus:</strong> <?php echo $campus; ?></p>
-                        <p><strong>Section:</strong> <?php echo $section; ?></p>
-                        <p><strong>College:</strong> <?php echo $college; ?></p>
+                <div class="table-container">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-table me-1"></i>
+                            Student Information
+                        </div>
+                        <div class="card-body">
+                            <table id="datatablesSimple" class="display">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                        <th>Course</th>
+                                        <th>Campus</th>
+                                        <th>College</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($_SESSION['entries'] as $index => $entry) : ?>
+                                        <tr>
+                                            <td><?php echo $entry['name']; ?></td>
+                                            <td><?php echo $entry['age']; ?></td>
+                                            <td><?php echo $entry['gender']; ?></td>
+                                            <td><?php echo $entry['course']; ?></td>
+                                            <td><?php echo $entry['campus']; ?></td>
+                                            <td><?php echo $entry['college']; ?></td>
+                                            <td>
+                                                <a href="?delete=<?php echo $index; ?>" onclick="return confirm('Are you sure you want to delete this entry?');">
+                                                    <button class="delete-button">Delete</button>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </main>
             <?php include('../layout/footer.php'); ?>
         </div>
     </div>
+
     <?php include('../layout/script.php'); ?>
+    <!-- Include DataTable JS -->
+
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        // Initialize DataTable
+        $(document).ready(function() {
+            $('#datatablesSimple').DataTable();
+        });
+    </script>
 </body>
 </html>
